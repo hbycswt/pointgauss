@@ -1,0 +1,85 @@
+# misc custom setting
+num_worker: 24
+mix_prob: 0.8
+empty_cache: false
+enable_amp: true
+
+# model settings
+model:
+  type: "DefaultSegmentorV2"
+  num_classes: 20
+  backbone_out_channels: 64
+  backbone:
+    type: "PT-v3m1"
+    in_channels: 6
+    order:
+      - "z"
+      - "z-trans"
+      - "hilbert"
+      - "hilbert-trans"
+    stride: [2, 2, 2, 2]
+    enc_depths: [2, 2, 2, 6, 2]
+    enc_channels: [32, 64, 128, 256, 512]
+    enc_num_head: [2, 4, 8, 16, 32]
+    enc_patch_size: [1024, 1024, 1024, 1024, 1024]
+    dec_depths: [2, 2, 2, 2]
+    dec_channels: [64, 64, 128, 256]
+    dec_num_head: [4, 4, 8, 16]
+    dec_patch_size: [1024, 1024, 1024, 1024]
+    mlp_ratio: 4
+    qkv_bias: true
+    qk_scale: null
+    attn_drop: 0.0
+    proj_drop: 0.0
+    drop_path: 0.3
+    shuffle_orders: true
+    pre_norm: true
+    enable_rpe: false
+    enable_flash: true
+    upcast_attention: false
+    upcast_softmax: false
+    cls_mode: false
+    pdnorm_bn: false
+    pdnorm_ln: false
+    pdnorm_decouple: true
+    pdnorm_adaptive: false
+    pdnorm_affine: true
+    pdnorm_conditions:
+      - "ScanNet"
+      - "S3DIS"
+      - "Structured3D"
+  criteria:
+    - type: "CrossEntropyLoss"
+      loss_weight: 1.0
+      ignore_index: -1
+    - type: "LovaszLoss"
+      mode: "multiclass"
+      loss_weight: 1.0
+      ignore_index: -1
+
+# scheduler settings
+epoch: 40 #800
+optimizer:
+  type: "AdamW"
+  lr: 0.001 # 0.001
+  weight_decay: 0.005
+scheduler:
+  type: "OneCycleLR"
+  max_lr: 0.001
+  pct_start: 0.04
+  anneal_strategy: "cos"
+  div_factor: 10.0
+  final_div_factor: 100.0
+
+
+pr_model_path: None
+data_dir: data/3dgs
+data_GS: data/3dgs/raw
+num_point: 8192
+num_classes: 2
+batch_size: 80
+model_path: checkpoints/ptv3isg.pth
+testname: test_desktop
+#data Augment
+augment: True
+augment_copies: 20
